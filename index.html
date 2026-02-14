@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TypeMaster - Professional Typing Speed Test</title>
+    <title>TypeMasterPro - Professional Typing Speed Test</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -65,6 +65,18 @@
         overflow-x: hidden;
         transition: background 0.4s cubic-bezier(0.4, 0, 0.2, 1),
           color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Hide scrollbar for entire page */
+      html,
+      body {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE & Edge */
+      }
+
+      html::-webkit-scrollbar,
+      body::-webkit-scrollbar {
+        display: none; /* Chrome, Safari */
       }
 
       /* ==================== Navbar ==================== */
@@ -375,7 +387,7 @@
         letter-spacing: 0.02em;
         position: relative;
         min-height: 264px; /* Fixed height to prevent jumping: 200px + 2*1.5rem padding + 2*2px border */
-        max-height: 300px;
+        max-height: 400px;
         overflow-y: auto;
         overflow-x: hidden;
         padding: 1.5rem;
@@ -386,12 +398,53 @@
         flex-wrap: wrap;
         align-content: flex-start;
         scroll-behavior: smooth;
+        outline: none;
+        cursor: text;
+        transition: all 0.3s ease;
+      }
+
+      .text-display {
+        overflow: auto; /* Enable scrolling */
         scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none;
+        -ms-overflow-style: none; /* IE & Edge */
       }
 
       .text-display::-webkit-scrollbar {
         display: none; /* Chrome, Safari */
+      }
+
+      .result-modal {
+        overflow: auto; /* Enable scrolling */
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE & Edge */
+      }
+
+      .result-modal::-webkit-scrollbar {
+        display: none; /* Chrome, Safari */
+      }
+
+      .text-display:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        background: var(--bg-secondary);
+      }
+
+      .text-display::before {
+        content: "Click here to focus and start typing...";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--text-muted);
+        opacity: 0.5;
+        font-size: 1rem;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .text-display.has-focus::before,
+      .text-display.started::before {
+        opacity: 0;
       }
 
       .text-display .char {
@@ -425,43 +478,35 @@
       }
 
       .text-display .char.current {
-        animation: blink 1s infinite;
-        border-left: 3px solid var(--primary);
-        margin-left: -3px;
+        animation: none;
+        background: var(--primary);
+        color: white;
+        border-radius: 3px;
+        padding: 0 2px;
+        margin: 0 -2px;
+        position: relative;
       }
 
-      @keyframes blink {
+      .text-display .char.current::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: white;
+        animation: cursorBlink 1s infinite;
+      }
+
+      @keyframes cursorBlink {
         0%,
         50% {
           opacity: 1;
         }
         51%,
         100% {
-          opacity: 0.3;
+          opacity: 0;
         }
-      }
-
-      .typing-input {
-        width: 100%;
-        padding: 1.25rem;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 1.25rem;
-        border: 3px solid var(--border);
-        border-radius: 16px;
-        background: var(--bg-primary);
-        color: var(--text-primary);
-        transition: all 0.3s ease;
-        outline: none;
-      }
-
-      .typing-input:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-      }
-
-      .typing-input:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
       }
 
       .action-buttons {
@@ -503,13 +548,6 @@
         border: 1px solid var(--border);
         animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         position: relative;
-        overflow: auto;              /* Enable scrolling */
-        scrollbar-width: none;       /* Firefox */
-        -ms-overflow-style: none;    /* IE & Edge */
-      }
-
-      .result-modal::-webkit-scrollbar {
-        display: none;               /* Chrome, Safari */
       }
 
       .result-header {
@@ -766,10 +804,6 @@
           min-height: 216px; /* Adjusted for smaller font and padding */
         }
 
-        .typing-input {
-          font-size: 1rem;
-        }
-
         .stats-bar {
           grid-template-columns: repeat(2, 1fr);
           gap: 1rem;
@@ -907,7 +941,9 @@
         </div>
       </div>
     </nav>
-    <div style="text-align: center; margin-top: 40px;">Open this website in Your Computer or Laptop For better Experience</div>
+    <div style="text-align: center; margin-top: 30px">
+      Open this website into Your Computer or laptop for better Experience
+    </div>
     <!-- ==================== Main Container ==================== -->
     <div class="container">
       <!-- ==================== Control Panel ==================== -->
@@ -1085,7 +1121,7 @@
           <label class="control-label">Settings</label>
           <div class="settings-grid">
             <div class="setting-item">
-              <span>Sound Effects</span>
+              <span>Off Sound Effects</span>
               <div class="toggle-switch" onclick="app.toggleSetting('sound')">
                 <div class="toggle-slider"></div>
               </div>
@@ -1173,20 +1209,8 @@
           </div>
         </div>
 
-        <!-- Text Display -->
-        <div class="text-display" id="textDisplay"></div>
-
-        <!-- Typing Input -->
-        <input
-          type="text"
-          class="typing-input"
-          id="typingInput"
-          placeholder="Click here and start typing..."
-          autocomplete="off"
-          autocorrect="off"
-          autocapitalize="off"
-          spellcheck="false"
-        />
+        <!-- Text Display (now also acts as typing area) -->
+        <div class="text-display" id="textDisplay" tabindex="0"></div>
 
         <!-- Action Buttons -->
         <div class="action-buttons">
@@ -1267,9 +1291,17 @@
     <!-- ==================== Footer ==================== -->
     <footer class="footer">
       <div class="footer-content">
-        <p>&copy; 2026 TypeMasterPro - Professional Typing Speed Test, Improve your typing skills with precision and style</p>
+        <p>
+          &copy; 2026 TypeMasterPro - Professional Typing Speed Test, Improve
+          your typing skills with precision and style
+        </p>
         <p style="margin-top: 0.5rem; font-size: 0.85rem">
-          Developed & Designed By <a href="https://muhammadmuzammil786.vercel.app/" style="color: #38bdf8;" target="_blank">Muhammad Muzammil Shahzad</a>
+          Designed and Developed By by
+          <a
+            href="https://muhammadmuzammil786.vercel.app/"
+            style="color: #38bdf8"
+            >Muhammad Muzammil Shahzad</a
+          >
         </p>
       </div>
     </footer>
@@ -1484,34 +1516,47 @@
 
         // ==================== Event Listeners ====================
         setupEventListeners() {
-          const input = document.getElementById("typingInput");
+          const textDisplay = document.getElementById("textDisplay");
 
-          input.addEventListener("input", (e) => {
-            if (!this.isTestActive && e.target.value.length > 0) {
-              this.startTest();
-            }
-            this.handleTyping(e);
+          // Make text display focusable and auto-focus on load
+          textDisplay.focus();
+
+          // Handle focus events
+          textDisplay.addEventListener("focus", () => {
+            textDisplay.classList.add("has-focus");
           });
 
-          input.addEventListener("keydown", (e) => {
+          textDisplay.addEventListener("blur", () => {
+            textDisplay.classList.remove("has-focus");
+          });
+
+          // Handle keyboard input
+          textDisplay.addEventListener("keydown", (e) => {
+            // Prevent default for all keys to avoid unwanted behavior
+            e.preventDefault();
+
+            // Start test on first keypress
+            if (!this.isTestActive && !this.isPaused && e.key.length === 1) {
+              this.startTest();
+            }
+
+            if (!this.isTestActive || this.isPaused) return;
+
+            // Handle backspace
             if (e.key === "Backspace") {
-              this.backspaceCount++;
+              this.handleBackspace();
+              return;
             }
 
-            // Prevent spacebar from scrolling the page
-            if (e.key === " " || e.code === "Space") {
-              e.preventDefault();
-              // Allow the space to be typed in the input
-              const start = e.target.selectionStart;
-              const end = e.target.selectionEnd;
-              const value = e.target.value;
-              e.target.value =
-                value.substring(0, start) + " " + value.substring(end);
-              e.target.selectionStart = e.target.selectionEnd = start + 1;
-
-              // Trigger input event manually
-              e.target.dispatchEvent(new Event("input", { bubbles: true }));
+            // Handle regular character input
+            if (e.key.length === 1) {
+              this.handleCharacterInput(e.key);
             }
+          });
+
+          // Click to focus
+          textDisplay.addEventListener("click", () => {
+            textDisplay.focus();
           });
 
           // Keyboard shortcuts
@@ -1519,21 +1564,6 @@
             if (e.ctrlKey && e.key === "r") {
               e.preventDefault();
               this.restartTest();
-            }
-
-            // Prevent spacebar from scrolling when typing input is focused or active test
-            if (
-              (e.key === " " || e.code === "Space") &&
-              (document.activeElement === input || this.isTestActive)
-            ) {
-              e.preventDefault();
-            }
-          });
-
-          // Prevent input when test is complete
-          input.addEventListener("focus", () => {
-            if (!this.isTestActive && this.elapsedTime > 0) {
-              input.blur();
             }
           });
         },
@@ -1714,6 +1744,8 @@
 
           this.isTestActive = true;
           this.startTime = Date.now();
+          const textDisplay = document.getElementById("textDisplay");
+          textDisplay.classList.add("started");
           document.getElementById("typingSection").classList.add("active");
 
           if (this.testMode === "time") {
@@ -1740,11 +1772,12 @@
           if (!this.isTestActive) return;
 
           this.isPaused = !this.isPaused;
-          const input = document.getElementById("typingInput");
+          const textDisplay = document.getElementById("textDisplay");
 
           if (this.isPaused) {
             clearInterval(this.timerInterval);
-            input.disabled = true;
+            textDisplay.style.opacity = "0.5";
+            textDisplay.blur();
           } else {
             this.startTime = Date.now() - this.elapsedTime;
             this.timerInterval = setInterval(() => {
@@ -1752,8 +1785,8 @@
               this.updateStats();
               this.checkTestCompletion();
             }, 100);
-            input.disabled = false;
-            input.focus();
+            textDisplay.style.opacity = "1";
+            textDisplay.focus();
           }
         },
 
@@ -1762,10 +1795,10 @@
           this.resetState();
           this.generateText();
 
-          const input = document.getElementById("typingInput");
-          input.value = "";
-          input.disabled = false;
-          input.focus();
+          const textDisplay = document.getElementById("textDisplay");
+          textDisplay.classList.remove("started");
+          textDisplay.style.opacity = "1";
+          textDisplay.focus();
 
           document.getElementById("typingSection").classList.remove("active");
         },
@@ -1811,7 +1844,9 @@
 
         completeTest() {
           this.stopTest();
-          document.getElementById("typingInput").disabled = true;
+          const textDisplay = document.getElementById("textDisplay");
+          textDisplay.blur();
+          textDisplay.style.opacity = "0.7";
 
           const result = this.calculateResults();
           this.saveResult(result);
@@ -1820,26 +1855,51 @@
         },
 
         // ==================== Typing Handler ====================
-        handleTyping(e) {
+        handleCharacterInput(char) {
           if (!this.isTestActive || this.isPaused) return;
+          if (this.currentPosition >= this.currentText.length) return;
 
-          this.typedText = e.target.value;
-          const currentChar = this.currentText[this.currentPosition];
-          const typedChar = this.typedText[this.currentPosition];
+          const expectedChar = this.currentText[this.currentPosition];
+          this.typedText += char;
+          this.totalChars++;
 
-          if (typedChar !== undefined) {
-            this.totalChars++;
+          if (char === expectedChar) {
+            this.correctChars++;
+            this.playSound("correct");
+          } else {
+            this.incorrectChars++;
+            this.mistakes++;
+            this.playSound("error");
+          }
 
-            if (typedChar === currentChar) {
+          this.currentPosition++;
+          this.updateDisplay();
+        },
+
+        handleBackspace() {
+          if (!this.isTestActive || this.isPaused) return;
+          if (this.currentPosition === 0) return;
+
+          this.backspaceCount++;
+          this.currentPosition--;
+          this.typedText = this.typedText.slice(0, -1);
+
+          // Recalculate stats
+          const lastTypedChar = this.currentText[this.currentPosition];
+          const chars = this.typedText.split("");
+
+          this.correctChars = 0;
+          this.incorrectChars = 0;
+          this.mistakes = 0;
+          this.totalChars = this.typedText.length;
+
+          for (let i = 0; i < this.typedText.length; i++) {
+            if (this.typedText[i] === this.currentText[i]) {
               this.correctChars++;
-              this.playSound("correct");
             } else {
               this.incorrectChars++;
               this.mistakes++;
-              this.playSound("error");
             }
-
-            this.currentPosition++;
           }
 
           this.updateDisplay();
@@ -1947,7 +2007,7 @@ CPM: ${result.cpm}
 Accuracy: ${result.accuracy}%
 Performance: ${result.performance}
 
-Try it yourself at TypeMaster!
+Try it yourself at typemasterpro-nine.vercel.app!
                 `.trim();
 
           navigator.clipboard
@@ -2283,7 +2343,6 @@ Try it yourself at TypeMaster!
         setFontFamily(family) {
           this.settings.fontFamily = family;
           document.getElementById("textDisplay").style.fontFamily = family;
-          document.getElementById("typingInput").style.fontFamily = family;
           localStorage.setItem("typingSettings", JSON.stringify(this.settings));
         },
 
